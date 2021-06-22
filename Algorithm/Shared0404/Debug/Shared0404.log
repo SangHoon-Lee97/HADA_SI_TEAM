@@ -1,0 +1,14 @@
+﻿  ShareServer.c
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(64,43): warning C4244: '초기화 중': 'double'에서 'char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(65,45): warning C4244: '초기화 중': 'double'에서 'char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(70,22): warning C4047: '초기화 중': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(72,23): warning C4047: '초기화 중': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(76,23): warning C4244: '초기화 중': 'double'에서 'int16_t'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(129,9): warning C4098: 'main': 'void' 함수에서 값을 반환하고 있습니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(419,20): warning C4477: 'printf' : 서식 문자열 '%d'에 'int' 형식의 인수가 필요하지만 variadic 인수 1의 형식이 'char *'입니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(422,29): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(428,53): warning C4047: '함수': 'unsigned char *'의 간접 참조 수준이 'char (*)[14]'과(와) 다릅니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(428,41): warning C4024: 'RS232_SendBuf': 형식 및 실제 매개 변수 2의 형식이 서로 다릅니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(434,26): warning C4047: '=': 'char'의 간접 참조 수준이 'void *'과(와) 다릅니다.
+C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Shared0404\ShareServer.c(452,40): warning C4244: '=': 'double'에서 'int16_t'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Shared0404.vcxproj -> C:\자율주행자동차\SI\COM_1\COM_1\Algorithm_woFilter\Algorithm\Debug\Shared0404.exe

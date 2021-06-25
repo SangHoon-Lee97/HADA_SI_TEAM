@@ -150,8 +150,8 @@ static double buf_Dist_R[N_data] = { 0, };
 static double buf_lambda[N_data] = { 0, };
 static double buf_delta[N_data] = { 0, };
 static double buf_delta_f[N_data] = { 0, };
-static double GPS_waypoint_Lat[N_data] = { 0, };
-static double GPS_waypoint_Lon[N_data] = { 0, };
+static double GPS_waypoint_Lat[N_data] = { 36.1022720713979,36.1021844686696,36.1021128629237,36.1020954779017 ,36.1022231827292,36.1023179137859,36.1023517716483,36.1024909444706};
+static double GPS_waypoint_Lon[N_data] = { 129.384665300645,129.384748096996,129.384827691525,129.384855924330,129.385023271002,129.385166410700,129.385260348791,129.385569212235 };
 static double GPS_waypoint_Lat_now = 0;
 static double GPS_waypoint_Lon_now = 0;
 

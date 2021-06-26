@@ -9,6 +9,8 @@
 #define RAD2DEG 180/PI
 #define K_GLOB  (double) (5.0)
 #define Body_L  (double) (0.5) // [m]
+#define MAX_STEER (int)(28)
+#define MIN_DIST  (int)(1) //[m]
 
 typedef struct
 {
@@ -120,7 +122,7 @@ double C_eX[2][1];
 double Kf_gps[4][1];
 double _Ygps[2][1];
 double Y_gps[2][1];
-static double Vec_BodyToWay[2] = { 0, };
+static double Vec_BodyToWay[1][2] = { 0.0, 0.0};
 
 
 // Buffer
@@ -154,7 +156,8 @@ static double GPS_waypoint_Lat[N_data] = { 36.1022720713979,36.1021844686696,36.
 static double GPS_waypoint_Lon[N_data] = { 129.384665300645,129.384748096996,129.384827691525,129.384855924330,129.385023271002,129.385166410700,129.385260348791,129.385569212235 };
 static double GPS_waypoint_Lat_now = 0;
 static double GPS_waypoint_Lon_now = 0;
-
+static double buf_GPS_waypoint_Lat_now[N_data] = { 0.0, };
+static double buf_GPS_waypoint_Lon_now[N_data] = { 0.0, };
 
 double eX[4][1] = {
    {0},{0},{0},{0}

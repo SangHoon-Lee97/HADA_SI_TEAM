@@ -9,7 +9,6 @@
 #include "Time_Check.h"
 #include "SharedMemory.h"
 
-
 enum ERP_Protocol_Write {
     ewS = 0,
     eweT, ewX, ewAUTO, ewESTOP, ewGEAR, ewSPEED0, ewSPEED1, ewSTEER0, ewSTEER1, ewBRAKE, ewALIVE, ewETX0, ewETX1
@@ -20,6 +19,45 @@ enum ERP_Protocol_Read {
 };
 enum FLAG { COPLIETE = -1, STOP = 0, INIT = 1, START = 2 };
 
+extern double delta;
+extern double gamma;
+extern double Dist_R;
+extern double lambda;
+extern double delta_f;
+
+extern double buf_gamma[N_data];
+extern double buf_Dist_R[N_data];
+extern double buf_lambda[N_data];
+extern double buf_delta[N_data];
+extern double buf_delta_f[N_data];
+extern double GPS_waypoint_Lat[N_data];
+extern double GPS_waypoint_Lon[N_data];
+extern double GPS_waypoint_Lat_now;
+extern double GPS_waypoint_Lon_now;
+extern double buf_GPS_waypoint_Lat_now[N_data];
+extern double buf_GPS_waypoint_Lon_now[N_data];
+
+extern int    buf_Index[N_data];
+extern double buf_Raw_Lat[N_data];
+extern double buf_Raw_Lon[N_data];
+extern double buf_Raw_Roll[N_data];
+extern double buf_Raw_Pitch[N_data];
+extern double buf_Raw_Yaw[N_data];
+extern double buf_Raw_AccX[N_data];
+extern double buf_Raw_AccY[N_data];
+extern double buf_Raw_AccZ[N_data];
+extern double buf_Filtered_Lat[N_data];
+extern double buf_Filtered_Lon[N_data];
+extern double buf_Filtered_EVel[N_data];
+extern double buf_Filtered_NVel[N_data];
+
+// TM Conversion
+extern double buf_TM_Lat[N_data];
+extern double buf_TM_Lon[N_data];
+
+extern int    simcnt;
+extern int    idx_way;
+extern double Vec_BodyToWay[1][2];
 
 
 # if RUN == 1
@@ -449,51 +487,6 @@ void GenerateSFF(void)
 
 # elif RUN == 2
 
-#define _CRT_SECURE_NO_WARNINGS
-#include "Include.h"
-#include "variable.h"
-#include "function.h"
-#include "Time_Check.h"
-#include "SharedMemory.h"
-
-extern double delta;
-extern double gamma  ;
-extern double Dist_R ;
-extern double lambda ;
-extern double delta_f;
-
-extern double buf_gamma[N_data];
-extern double buf_Dist_R[N_data];
-extern double buf_lambda[N_data];
-extern double buf_delta[N_data];
-extern double buf_delta_f[N_data];
-extern double GPS_waypoint_Lat[N_data];
-extern double GPS_waypoint_Lon[N_data];
-extern double GPS_waypoint_Lat_now;
-extern double GPS_waypoint_Lon_now;
-
-extern int    buf_Index[N_data] ;
-extern double buf_Raw_Lat[N_data] ;
-extern double buf_Raw_Lon[N_data] ;
-extern double buf_Raw_Roll[N_data] ;
-extern double buf_Raw_Pitch[N_data] ;
-extern double buf_Raw_Yaw[N_data] ;
-extern double buf_Raw_AccX[N_data] ;
-extern double buf_Raw_AccY[N_data] ;
-extern double buf_Raw_AccZ[N_data] ;
-extern double buf_Filtered_Lat[N_data] ;
-extern double buf_Filtered_Lon[N_data] ;
-extern double buf_Filtered_EVel[N_data] ;
-extern double buf_Filtered_NVel[N_data] ;
-
-// TM Conversion
-extern double buf_TM_Lat[N_data];
-extern double buf_TM_Lon[N_data];
-
-extern int    simcnt ;
-extern int    idx_way;
-extern double Vec_BodyToWay[2];
-
 void main() {
 
     CreateClientXsens();
@@ -525,8 +518,9 @@ void main() {
     //dat_buf_NovA_Flag.flag = 1;
 
     FlagWrite(dat_buf_Xsens_Flag, CLI_smdat_Xsens_Flag);
-    //FlagWrite(dat_buf_NovA_Flag, CLI_smdat_NovA_Flag);
     FlagWrite(dat_buf_Ublox_Flag, CLI_smdat_Ublox_Flag);
+
+    //FlagWrite(dat_buf_NovA_Flag, CLI_smdat_NovA_Flag);
 
     FILE* rFile = fopen("data_read.txt", "w");
     FILE* wFile = fopen("data_write.txt", "w");
@@ -536,9 +530,7 @@ void main() {
         printf("Can not open comport\n");
         return(0);
     }
-
     TimeInitialization();
-
     do
     {
      
@@ -572,8 +564,7 @@ void main() {
         dat_buf_Navi.East_Vel = eX[2][0];
         dat_buf_Navi.North_Vel = eX[3][0];
 
-        //DataWrite(dat_buf_Navi);
-
+        //DataWrite(dat_buf_Navi);s
         Idle_Time();
         simcnt++;
 
@@ -758,66 +749,48 @@ void TMConversion(void) {
 
 
 void Pursuit_Guidance(void) {
+    gamma = buf_Raw_Yaw[simcnt];
+    if (gamma > 180 * DEG2RAD)
+        gamma = gamma - 180 * DEG2RAD;
+    else if (gamma < -180 * DEG2RAD)
+        gamma = gamma + 180 * DEG2RAD;
 
-    gamma = 90 - buf_Raw_Yaw[simcnt];
-    if (gamma > 180)
-        gamma = gamma - 360;
-    gamma = gamma * DEG2RAD;
-    buf_gamma[simcnt] = gamma;
 
     // Distance and Lambda Calculation
-    Vec_BodyToWay[1] = GPS_waypoint_Lat[simcnt] - buf_TM_Lat[simcnt];
-    Vec_BodyToWay[2] = GPS_waypoint_Lon[simcnt] - buf_TM_Lon[simcnt];
+    Vec_BodyToWay[0][0] = GPS_waypoint_Lat_now - buf_TM_Lat[simcnt];
+    Vec_BodyToWay[0][1] = GPS_waypoint_Lon_now - buf_TM_Lon[simcnt];
 
-    Dist_R = sqrt(pow(Vec_BodyToWay[1], 2)) + sqrt(pow(Vec_BodyToWay[2], 2));
-    buf_Dist_R[simcnt] = Dist_R;
-
-    lambda = atan2(Vec_BodyToWay[1], Vec_BodyToWay[2]);
-    buf_lambda[simcnt] = lambda;
+    Dist_R = sqrt(pow(Vec_BodyToWay[0][0], 2)) + sqrt(pow(Vec_BodyToWay[0][1], 2));
+    lambda = atan2(Vec_BodyToWay[0][1], Vec_BodyToWay[0][0]);
 
     // Delta Calculation
     delta = gamma - lambda;
-    if (delta > PI)
-        delta = delta - 2 * PI;
-    else if (delta < -PI)
-        delta = delta + 2 * PI;
-    buf_delta[simcnt] = delta;
-
+    if (delta > 180 * DEG2RAD)
+        delta = delta - 180 * DEG2RAD;
+    else if (delta < -180 * DEG2RAD)
+        delta = delta + 180 * DEG2RAD;
+    
     // Delta_f Calculation
-    delta_f = (-1 * 2 * Body_L * K_GLOB * sin(delta)) / Dist_R;
+    delta_f = (-2 * Body_L * K_GLOB * sin(delta)) / Dist_R;
     delta_f = RAD2DEG * delta_f;
-    if (delta_f > 10)
-        delta_f = 10;
-    else if (delta_f < -10)
-        delta_f = -10;
+    if (delta_f > MAX_STEER)
+        delta_f = MAX_STEER;
+    else if (delta_f < -MAX_STEER)
+        delta_f = -MAX_STEER;
+    printf("gamma : %f lambda : %f delfa_f %f delfa_f %f \n", gamma, lambda, delta, delta_f);
+
+
+    buf_delta[simcnt] = delta;
+    buf_lambda[simcnt] = lambda;
+    buf_Dist_R[simcnt] = Dist_R;
+    buf_gamma[simcnt] = gamma;
     buf_delta_f[simcnt] = delta_f;
+    buf_GPS_waypoint_Lat_now[idx_ndata] = GPS_waypoint_Lat_now;
+    buf_GPS_waypoint_Lon_now[idx_ndata] = GPS_waypoint_Lon_now;
 }
 
-//void ReadWayPoint_TM(void) {
-//
-//    double num1;
-//    double num2;
-//    char str[500];
-//
-//    FILE* file = fopen("Waypoint.txt", "r");
-//
-//    if (file == NULL) {
-//        printf("파일열기 실패\n");
-//        return 1;
-//    }
-//
-//    //fprintf(file, "%d %d %s \n", num1, num2, "입력되었습니다.");
-//    while (!feof(file)) {
-//        fscanf(file, "%f %f %s \n", &num1, &num2, str);
-//        printf("%f %f %s \n", num1, num2, str);
-//        
-//    }
-//    fclose(file);
-//
-//}
-
 void WayPoint_Change(void) {
-    if (Dist_R < 3) {
+    if (Dist_R < MIN_DIST) {
         GPS_waypoint_Lat_now = GPS_waypoint_Lat[idx_way];
         GPS_waypoint_Lon_now = GPS_waypoint_Lon[idx_way];
         idx_way++;
@@ -915,6 +888,30 @@ void SaveData()
    fclose(pFile);
    printf("File storing done");
 }
+
+//void ReadWayPoint_TM(void) {
+//
+//    double num1;
+//    double num2;
+//    char str[500];
+//
+//    FILE* file = fopen("Waypoint.txt", "r");
+//
+//    if (file == NULL) {
+//        printf("파일열기 실패\n");
+//        return 1;
+//    }
+//
+//    //fprintf(file, "%d %d %s \n", num1, num2, "입력되었습니다.");
+//    while (!feof(file)) {
+//        fscanf(file, "%f %f %s \n", &num1, &num2, str);
+//        printf("%f %f %s \n", num1, num2, str);
+//        
+//    }
+//    fclose(file);
+//
+//}
+
 
 #endif
 

@@ -106,7 +106,7 @@ double task3 = 0.0;
 double Ts = 0.05;
 static int    simcnt = 0;
 int    test = 0;
-static int    idx_way = 0;
+static int    idx_way = 1;
 
 
 // ===========
@@ -122,42 +122,42 @@ double C_eX[2][1];
 double Kf_gps[4][1];
 double _Ygps[2][1];
 double Y_gps[2][1];
-static double Vec_BodyToWay[1][2] = { 0.0, 0.0};
+double Vec_BodyToWay[1][2] = { 0.0, 0.0};
 
 
 // Buffer
-static int    buf_Index[N_data] = { 0, };
-static double buf_Raw_Lat[N_data] = { 0, };
-static double buf_Raw_Lon[N_data] = { 0, };
-static double buf_Raw_Roll[N_data] = { 0, };
-static double buf_Raw_Pitch[N_data] = { 0, };
-static double buf_Raw_Yaw[N_data] = { 0, };
-static double buf_Raw_AccX[N_data] = { 0, };
-static double buf_Raw_AccY[N_data] = { 0, };
-static double buf_Raw_AccZ[N_data] = { 0, };
-static double buf_Filtered_Lat[N_data] = { 0, };
-static double buf_Filtered_Lon[N_data] = { 0, };
-static double buf_Filtered_EVel[N_data] = { 0, };
-static double buf_Filtered_NVel[N_data] = { 0, };
+int    buf_Index[N_data] = { 0, };
+double buf_Raw_Lat[N_data] = { 0, };
+double buf_Raw_Lon[N_data] = { 0, };
+double buf_Raw_Roll[N_data] = { 0, };
+double buf_Raw_Pitch[N_data] = { 0, };
+double buf_Raw_Yaw[N_data] = { 0, };
+double buf_Raw_AccX[N_data] = { 0, };
+double buf_Raw_AccY[N_data] = { 0, };
+double buf_Raw_AccZ[N_data] = { 0, };
+double buf_Filtered_Lat[N_data] = { 0, };
+double buf_Filtered_Lon[N_data] = { 0, };
+double buf_Filtered_EVel[N_data] = { 0, };
+double buf_Filtered_NVel[N_data] = { 0, };
 
 
 // TM Conversion
-static double buf_TM_Lat[N_data] = { 0, };
-static double buf_TM_Lon[N_data] = { 0, };
+double buf_TM_Lat[N_data] = { 0, };
+double buf_TM_Lon[N_data] = { 0, };
 
 
 // Pursuit Guidance Variable
-static double buf_gamma[N_data] = { 0, };
-static double buf_Dist_R[N_data] = { 0, };
-static double buf_lambda[N_data] = { 0, };
-static double buf_delta[N_data] = { 0, };
-static double buf_delta_f[N_data] = { 0, };
-static double GPS_waypoint_Lat[N_data] = { 36.1022720713979,36.1021844686696,36.1021128629237,36.1020954779017 ,36.1022231827292,36.1023179137859,36.1023517716483,36.1024909444706};
-static double GPS_waypoint_Lon[N_data] = { 129.384665300645,129.384748096996,129.384827691525,129.384855924330,129.385023271002,129.385166410700,129.385260348791,129.385569212235 };
-static double GPS_waypoint_Lat_now = 0;
-static double GPS_waypoint_Lon_now = 0;
-static double buf_GPS_waypoint_Lat_now[N_data] = { 0.0, };
-static double buf_GPS_waypoint_Lon_now[N_data] = { 0.0, };
+double buf_gamma[N_data] = { 0, };
+double buf_Dist_R[N_data] = { 0, };
+double buf_lambda[N_data] = { 0, };
+double buf_delta[N_data] = { 0, };
+double buf_delta_f[N_data] = { 0, };
+double GPS_waypoint_Lat[N_data] = { 36.1022720713979,36.1021844686696,36.1021128629237,36.1020954779017 ,36.1022231827292,36.1023179137859,36.1023517716483,36.1024909444706};
+double GPS_waypoint_Lon[N_data] = { 129.384665300645,129.384748096996,129.384827691525,129.384855924330,129.385023271002,129.385166410700,129.385260348791,129.385569212235 };
+double GPS_waypoint_Lat_now = 36.1022720713979;
+double GPS_waypoint_Lon_now = 129.384665300645;
+double buf_GPS_waypoint_Lat_now[N_data] = { 0.0, };
+double buf_GPS_waypoint_Lon_now[N_data] = { 0.0, };
 
 double eX[4][1] = {
    {0},{0},{0},{0}
@@ -217,11 +217,12 @@ double M = 0.0;
 
 
 // Pursuit Guidance
-static double delta = 0.0;
-static double gamma = 0.0;
-static double Dist_R = 0.0;
-static double lambda = 0.0;
-static double delta_f = 0.0;
+double delta = 0.0;
+double gamma = 0.0;
+double Dist_R = 0.0;
+double Dist_R2 = 10.0;
+double lambda = 0.0;
+double delta_f = 0.0;
 
 
 //ERP42

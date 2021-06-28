@@ -19,45 +19,46 @@ enum ERP_Protocol_Read {
 };
 enum FLAG { COPLIETE = -1, STOP = 0, INIT = 1, START = 2 };
 
-extern double delta;
-extern double gamma;
-extern double Dist_R;
-extern double lambda;
-extern double delta_f;
-
-extern double buf_gamma[N_data];
-extern double buf_Dist_R[N_data];
-extern double buf_lambda[N_data];
-extern double buf_delta[N_data];
-extern double buf_delta_f[N_data];
-extern double GPS_waypoint_Lat[N_data];
-extern double GPS_waypoint_Lon[N_data];
-extern double GPS_waypoint_Lat_now;
-extern double GPS_waypoint_Lon_now;
-extern double buf_GPS_waypoint_Lat_now[N_data];
-extern double buf_GPS_waypoint_Lon_now[N_data];
-
-extern int    buf_Index[N_data];
-extern double buf_Raw_Lat[N_data];
-extern double buf_Raw_Lon[N_data];
-extern double buf_Raw_Roll[N_data];
-extern double buf_Raw_Pitch[N_data];
-extern double buf_Raw_Yaw[N_data];
-extern double buf_Raw_AccX[N_data];
-extern double buf_Raw_AccY[N_data];
-extern double buf_Raw_AccZ[N_data];
-extern double buf_Filtered_Lat[N_data];
-extern double buf_Filtered_Lon[N_data];
-extern double buf_Filtered_EVel[N_data];
-extern double buf_Filtered_NVel[N_data];
-
-// TM Conversion
-extern double buf_TM_Lat[N_data];
-extern double buf_TM_Lon[N_data];
-
-extern int    simcnt;
-extern int    idx_way;
-extern double Vec_BodyToWay[1][2];
+//extern double delta;
+//extern double gamma;
+//extern double Dist_R;
+//extern double Dist_R2;
+//extern double lambda;
+//extern double delta_f;
+//
+//extern double buf_gamma[N_data];
+//extern double buf_Dist_R[N_data];
+//extern double buf_lambda[N_data];
+//extern double buf_delta[N_data];
+//extern double buf_delta_f[N_data];
+//extern double GPS_waypoint_Lat[N_data];
+//extern double GPS_waypoint_Lon[N_data];
+//extern double GPS_waypoint_Lat_now;
+//extern double GPS_waypoint_Lon_now;
+//extern double buf_GPS_waypoint_Lat_now[N_data];
+//extern double buf_GPS_waypoint_Lon_now[N_data];
+//
+//extern int    buf_Index[N_data];
+//extern double buf_Raw_Lat[N_data];
+//extern double buf_Raw_Lon[N_data];
+//extern double buf_Raw_Roll[N_data];
+//extern double buf_Raw_Pitch[N_data];
+//extern double buf_Raw_Yaw[N_data];
+//extern double buf_Raw_AccX[N_data];
+//extern double buf_Raw_AccY[N_data];
+//extern double buf_Raw_AccZ[N_data];
+//extern double buf_Filtered_Lat[N_data];
+//extern double buf_Filtered_Lon[N_data];
+//extern double buf_Filtered_EVel[N_data];
+//extern double buf_Filtered_NVel[N_data];
+//
+//// TM Conversion
+//extern double buf_TM_Lat[N_data];
+//extern double buf_TM_Lon[N_data];
+//
+//extern int    simcnt;
+//extern int    idx_way;
+//extern double Vec_BodyToWay[1][2];
 
 
 # if RUN == 1
@@ -504,10 +505,11 @@ void main() {
     //READ WayPoint True Value in TM Coordinate System.
     //ReadWayPoint_TM();
 
-
     while (1)
     {
-        if (FlagRead(SERV_smdat_Flag) != STOP)
+        /*if (FlagRead(SERV_smdat_Flag) != STOP)
+            break;*/
+        if (FlagRead(CLI_smdat_Xsens_Flag) != STOP)
             break;
     }
 
@@ -530,10 +532,10 @@ void main() {
         printf("Can not open comport\n");
         return(0);
     }
+
     TimeInitialization();
     do
     {
-     
         if (simcnt % 5 == 0) {
             Buffer_Ublox();
             DataReadUblox(CLI_smdat_Ublox);  // Check Whether data is fine
@@ -543,28 +545,29 @@ void main() {
 
         //DataReadNovA(CLI_smdat_NovA);
 
-        //NavigationFilter();
-        //TMConversion();
+        NavigationFilter();
+        TMConversion();
 
         Pursuit_Guidance();
-
+        
         WayPoint_Change();
 
         if (simcnt % 2 == 0) {
             Command_ERP42();
         }
 
-        dat_buf_Navi.SIM_count = SIM_count;
-        dat_buf_Navi.SIM_Time = SIM_Time;
-        dat_buf_Navi.Roll = roll;
-        dat_buf_Navi.Pitch = pitch;
-        dat_buf_Navi.Yaw = yaw;
-        dat_buf_Navi.Longtitude = longitude;
-        dat_buf_Navi.Latitude = latitude;
-        dat_buf_Navi.East_Vel = eX[2][0];
-        dat_buf_Navi.North_Vel = eX[3][0];
+        //dat_buf_Navi.SIM_count = SIM_count;
+        //dat_buf_Navi.SIM_Time = SIM_Time;
+        //dat_buf_Navi.Roll = roll;
+        //dat_buf_Navi.Pitch = pitch;
+        //dat_buf_Navi.Yaw = yaw;
+        //dat_buf_Navi.Longtitude = longitude;
+        //dat_buf_Navi.Latitude = latitude;
+        //dat_buf_Navi.East_Vel = eX[2][0];
+        //dat_buf_Navi.North_Vel = eX[3][0];
 
-        //DataWrite(dat_buf_Navi);s
+        //DataWrite(dat_buf_Navi);
+
         Idle_Time();
         simcnt++;
 
@@ -642,10 +645,10 @@ void   NavigationFilter(void)
     U_acc[2][0] = CLI_smdat_Xsens->acc_z;
     //printf("filter%d %f %f %f %f %f %d %f %f \n", index_imu, roll, pitch, yaw, accX, accY, index_gps, latitude, longitude);
 
-    if ((36 < CLI_smdat_NovA->LatDegree) && (CLI_smdat_NovA->LatDegree < 37) && (129 < CLI_smdat_NovA->LongDegree) && (CLI_smdat_NovA->LongDegree < 130))
+    if ((36 < CLI_smdat_Ublox->LatDegree) && (CLI_smdat_Ublox->LatDegree < 37) && (129 < CLI_smdat_Ublox->LongDegree) && (CLI_smdat_Ublox->LongDegree < 130))
     {
-        Ygps[0][0] = (CLI_smdat_NovA->LatDegree - LAT0) * R0;
-        Ygps[1][0] = (CLI_smdat_NovA->LongDegree - LON0) * R0;
+        Ygps[0][0] = (CLI_smdat_Ublox->LatDegree - LAT0) * R0;
+        Ygps[1][0] = (CLI_smdat_Ublox->LongDegree - LON0) * R0;
         //printf("\nYgps1: %f\tYgps2: %f\n", Ygps[0][0], Ygps[1][0]);
 
         for (i = 0; i < 4; i++)
@@ -656,8 +659,6 @@ void   NavigationFilter(void)
                     //printf("A_eX: %d %f \n", simcnt, A_eX[i][0]);
                 }
             }
-
-
         for (i = 0; i < 4; i++)
             for (j = 0; j < 1; j++) {
                 //B_eX[i][j] = 0;
@@ -694,7 +695,6 @@ void   NavigationFilter(void)
             //printf("if:  %d %f \n", simcnt, eX[i][0]);
             //printf("eX: %d %f \n", simcnt, eX[i][0]);
         }
-
     }
     else
     {
@@ -724,7 +724,7 @@ void   NavigationFilter(void)
 
 void TMConversion(void) {
 
-    if ((36 < CLI_smdat_NovA->LatDegree) && (CLI_smdat_NovA->LatDegree < 37) && (129 < CLI_smdat_NovA->LongDegree) && (CLI_smdat_NovA->LongDegree < 130)) {
+    if ((36 < CLI_smdat_Ublox->LatDegree) && (CLI_smdat_Ublox->LatDegree < 37) && (129 < CLI_smdat_Ublox->LongDegree) && (CLI_smdat_Ublox->LongDegree < 130)) {
         Curr_Lat = CLI_smdat_Ublox->LatDegree;
         Curr_Lon = CLI_smdat_Ublox->LongDegree;
     }
@@ -749,6 +749,7 @@ void TMConversion(void) {
 
 
 void Pursuit_Guidance(void) {
+
     gamma = buf_Raw_Yaw[simcnt];
     if (gamma > 180 * DEG2RAD)
         gamma = gamma - 180 * DEG2RAD;
@@ -790,11 +791,15 @@ void Pursuit_Guidance(void) {
 }
 
 void WayPoint_Change(void) {
+    
     if (Dist_R < MIN_DIST) {
         GPS_waypoint_Lat_now = GPS_waypoint_Lat[idx_way];
         GPS_waypoint_Lon_now = GPS_waypoint_Lon[idx_way];
         idx_way++;
     }
+    
+    /*printf("\nGPS_WAYPOINT_Lat : %f \n", GPS_waypoint_Lat_now);
+    printf("GPS_WAYPOINT_Lon : %f \n", GPS_waypoint_Lon_now);*/
 }
 
 void Command_ERP42(void) {
